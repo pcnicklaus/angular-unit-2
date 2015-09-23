@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="myApp" ng-controller="redditController">
+  <head>
+    <meta charset="utf-8">
+    <title>{{ greeting }} World</title>
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css"></link>
+
+  </head>
+
+  <nav id="mainNav" class="navbar navbar-default navbar-fixed-top">
+        <div class="container-fluid">
+
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+
+                <!-- Submit drowdown reveal -->
+                <button type="button" class="navbar-btn" ng-click="submitScreen = !submitScreen">Submit Post</button>
+
+                <label>&nbsp Search</label>
+                <input type="search" class="navbar-search" ng-model="searchText" placeholder="Search">
+
+                <a class="navbar-brand page-scroll" href="#page-top">Reddit Clone</a>
+
+                <label>&nbsp Sort By</label>
+                <select ng-options="option.id for option in data.availableOptions track by data.selectedOption.id" ng-model='data.selectedOptions'>Sort By</select>
+            </div>
+
+
+        </div>
+        <!-- /.container-fluid -->
+
+  </nav>
+
+  <body>
+  <!-- submit post screen -->
+  <div modal="showModal" ng-show="submitScreen">
+    <div class="modal-header">
+        <h4>Submit a Post</h4>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-sm-offset-1 col-sm-10">
+              <form name="redditForm" ng-submit="addPost()" novalidate >
+                <div class="form-group">
+                  <input type="text" class="form-control" placeholder="title" ng-model="title" required>
+                </div>
+                <div class="form-group">
+                  <input type="text" class="form-control" placeholder="Author" ng-model="author" required>
+                </div>
+                <div class="form-group">
+                  <input type="textarea" class="form-control" placeholder="Description" ng-model="description" required>
+                </div>
+                <div class="form-group">
+                  <input type="url" class="form-control" placeholder="Image URL" ng-model="image" required>
+                </div>
+                <div>
+                  <button type="submit" class="btn btn-success" ng-mouseup="submitScreen = !submitScreen" value="Submit Post"></button>
+                  <div>Your posting is {{redditForm.$valid}}</div>
+
+
+                  <button class="btn" ng-click="submitScreen = !submitScreen">Cancel</button>
+                </div>
+              </form>
+            </div>
+          </div>
+    </div>
+    <div class="modal-footer">
+
+      <!-- inside the submit screen to add post -->
+
+    <!--   <button class="btn btn-success" ng-click="addPost()" ng-mouseup="submitScreen = !submitScreen">Okay</button>
+
+      <button class="btn" ng-click="submitScreen = !submitScreen">Cancel</button> -->
+
+    </div>
+  </div>
+
+
+    <!-- stories start -->
+    <!--/stories-->
+   <br>
+   <div class="row" ng-repeat="post in posts | orderBy: data.selectedOptions.value | filter:searchText">
+       <div class="col-md-1"></div>
+       <div class = "col-md-10 well well-lg">
+       <br>
+       <div class="col-md-2 col-sm-3 text-center">
+           <a class="story-title" href="#"><img alt="" src=http://api.ning.com/files/DtcI2O2Ry7DS11DQI3Y3LiFq8qcDACKmc27Z7eEsnWOd*iwoAGM7AmDCcf*FHt0FQjNpY6WyY2GFGvrABz-kc-svTm3rn78v/1082115632.jpeg style="width:100px;height:100px" class="blog-image"></a>
+       </div>
+       <div class="col-md-10 col-sm-9">
+           <div class="row">
+               <h4 class="col-md-8">
+                <span>{{ post.title }} |</span>
+
+           <span class="glyphicon glyphicon-arrow-up" aria-hidden="true" ng-click="post.votes = post.votes +1"> </span>
+           <span class="glyphicon glyphicon-arrow-down" aria-hidden="true" ng-click="post.votes = post.votes -1"></span>
+            <span> {{post.votes}} </span>
+           </h4>
+           <small style="font-family:courier,'new courier';" class="text-muted">--{{post.author}} </small>
+           </div>
+           <div class="row">
+               <div class="col-xs-9">
+                   <p>{{ post.description }}.</p>
+                   <h4>
+
+                      <small style="font-family:courier,'new courier';" class="text-muted">
+
+                      <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span> <time title="{{ post.date | amDateFormat: 'dddd, MMMM Do YYYY, h:mm a' }}">{{ post.date | amCalendar }}</time>  |
+                      <span class="glyphicon glyphicon-comment" aria-hidden="true"></span>
+
+                      <a href="" class="text-muted" ng-click="commentsDisplay = !commentsDisplay">comment |</a>
+
+
+                         <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+
+                      <a href="" class="text-muted" ng-click="commentScreen = !commentScreen">Add Comment</a>
+                         </small>
+                      <br>
+
+                      <div ng-show="commentsDisplay" ng-repeat="comment in post.comments">
+
+                        <br>
+                        <p>{{ comment.author }} says {{ comment.comment }}</p>
+
+                      </div>
+
+
+
+                      <div ng-show="commentScreen">
+                        <!-- comment form for comments SHOW/HIDE-->
+                         <div class="modal-body">
+                            <div class="row">
+                              <div class="col-sm-offset-1 col-sm-10">
+                                <form>
+                                <div class="form-group">
+                                  <input type="text" class="form-control" placeholder="Author" ng-model="commentAuthor">
+                                </div>
+                                <div class="form-group">
+                                  <input type="textarea" class="form-control" placeholder="Comment" ng-model="commentDescription">
+                                </div>
+                              </form> <!-- end form -->
+                            </div> <!-- end col-sm-offset-1 -->
+                          </div> <!-- end row -->
+                        </div> <!-- end modal body -->
+
+
+              <button class="btn btn-success" ng-click="addComment()" ng-mouseup="commentScreen = !commentScreen">Post</button>
+              <button class="btn" ng-click="commentScreen = !commentScreen">Cancel</button>
+
+          </div>
+                   </h4>
+                </div>
+               <div class="col-xs-3"></div>
+           </div>
+           <br>
+           <br>
+       </div>
+   </div>
+   </div>
+   <hr>
+
+
+
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.5/angular.min.js"></script>
+    <!-- load momentJS (required for angular-moment) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment.min.js"></script>
+
+    <!-- load angular-moment -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-moment/0.9.0/angular-moment.min.js"></script>
+
+    <!-- app.js -->
+    <script type="text/javascript" src="./js/app.js"></script>
+    <!-- controller.js -->
+    <script type="text/javascript" src="./js/controllers.js"></script>
+
+
+  </body>
+</html>
